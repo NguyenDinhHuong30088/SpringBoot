@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: separate|collapse|initial|inherit;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid black;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
+</head>
+<body style="background-color: aqua">
+<h2>QUẢN LÝ TIN TỨC</h2>
+<form action="untitled1/index.html" method="get">
+    <p>Tiêu đề <input type="text" name="title" style="font-size: 20px"></p>
+    <p>Danh mục <input type="text" name="category" style="font-size: 20px"></p>
+    <input type="submit" value="Search" style="background-color: yellow">
+</form>
+<br>
+<table id="management-table">
+    <tr >
+        <th>Id</th>
+        <th>title</th>
+        <th>description</th>
+        <th>status</th>
+        <th>thumbnail</th>
+        <th>category</th>
+        <th>content</th>
+        <th>CreatedAt</th>
+        <th>UpdatedAt</th>
+    </tr>
+</table>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const urlParmas = new URLSearchParams(window.location.search);
+        const title = urlParmas.get('title');
+        const category = urlParmas.get('category');
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200){
+                console.log(xhr.responseText);
+                var data = JSON.parse(xhr.responseText);
+                console.log(data[0].name);
+                var tableTag = document.querySelector('#management-table');
+                for (let i = 0; i < data.length; i ++){
+                    const  element = data[i];
+                    tableTag.innerHTML += `<tr>
+                                            <td>${element.id}</td>
+                                            <td>${element.title}</td>
+                                            <td>${element.description}</td>
+                                            <td>${element.thumbnail}</td>
+                                            <td>${element.content}</td>
+                                            <td>${element.category}</td>
+                                            <td>${element.status}</td>
+                                            <td>${element.createdAt}</td>
+                                            <td>${element.updatedAt}</td>
+                                            <td class="w3-margin">
+                                                <a href="detail.html?id=${element.id}"> <i class="fa fa-exclamation-circle"></i></a>
+                                                <a href="form.html?id=${element.id}"> <i class="fa fa-edit"></i></a>
+                                                <i class="fa fa-trash" onclick="deleteProduct(${element.id})"></i>
+                                            </td>
+                                        </tr>`;
+                }
+            }
+        }
+        xhr.open('GET',`http://localhost:8080/api/v1/managements?title=${title}&category=${category}`, false);
+        xhr.send(); // phóng xe đi
+    });
+
+    function deleteProduct(id){
+        if (id === undefined || id === null){
+            return;
+        }
+        if (confirm('Are you sure?')){
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function (){
+                if (xhr.readyState == 4 && xhr.status == 200){
+                    alert('Success');
+                    window.location.href = '/index.html';
+                }
+            };
+            xhr.open('DELETE', 'http://localhost:8080/api/v1/managements/'+ id, false);
+            xhr.send();
+        }
+    }
+</script>
+</body>
+</html>

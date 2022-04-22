@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <title>Document</title>
+</head>
+<body style="background-color: thistle">
+<div class="w3-container w3-pink">
+    <h3>Product Form</h3>
+</div>
+<form class="w3-container" name="product-form">
+    <p>
+        <label class="w3-text-pink">Title</label>
+        <input class="w3-input w3-border w3-light-grey" type="text" name="title"></p>
+    <p>
+        <label class="w3-text-pink">Description</label>
+        <input class="w3-input w3-border w3-light-grey" type="text" name="description"></p>
+    <p>
+        <label class="w3-text-pink">Status</label>
+        <input class="w3-input w3-border w3-light-grey" type="text" name="status"></p>
+    <p>
+        <label class="w3-text-pink">Thumbnail</label>
+        <input class="w3-input w3-border w3-light-grey" type="text" name="thumbnail"></p>
+    <p>
+        <label class="w3-text-pink">Category</label>
+        <input class="w3-input w3-border w3-light-grey" type="number" name="category"></p>
+    <p>
+        <label class="w3-text-pink">Content</label>
+        <input class="w3-input w3-border w3-light-grey" type="text" name="content"></p>
+    <p>
+        <input class="w3-btn w3-pink" type="submit" name="submit" value="Submit">
+        <input class="w3-btn w3-pink" type="reset" value="Reset">
+    </p>
+</form>
+<script>
+    document.addEventListener('DOMContentLoaded',function (){
+        //lay btn submit
+        var btnSubmit = document.forms['product-form']['submit'];
+        //lay thong tin input
+        var inputTitle = document.forms['product-form']['title'];
+        var inputDescription = document.forms['product-form']['description'];
+        var inputStatus = document.forms['product-form']['status'];
+        var inputThumbnail = document.forms['product-form']['thumbnail'];
+        var inputCategory = document.forms['product-form']['category'];
+        var inputContent = document.forms['product-form']['content'];
+        btnSubmit.onclick = function (e){
+            e.preventDefault();
+            var objectToSend ={
+                'title': inputTitle.value,
+                'description': inputDescription.value,
+                'thumbnail': inputThumbnail.value,
+                'category': inputCategory.value,
+                'content': inputContent.value,
+                'status': inputStatus.value,
+
+            }
+            var data = JSON.stringify(objectToSend);
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function (){
+                if (xhr.readyState ===4 && xhr.status === 201){
+                    alert('Them san pham thanh cong');
+                    window.location.href = '/index.html';//dua ve trang danh sach san pham.
+                }
+            }
+            xhr.open('POST','http://localhost:8088/api/v1/managements',false);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF8");
+            xhr.send(data);
+        }
+    });
+    function loadManagementDetail(id) {
+        var getManagementDetailUrl = `http://localhost:8080/api/v1/managements/${id}`;
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4){
+                if (xhr.status === 200){
+                    var managementDetail = JSON.parse(xhr.responseText);
+                    document.forms['article-form']['title'].value = managementDetail.title;
+                    document.forms['article-form']['description'].value = managementDetail.description;
+                    document.forms['article-form']['status'].value = managementDetail.status;
+                    document.forms['article-form']['thumbnail'].value = managementDetail.thumbnail;
+                    document.forms['article-form']['category'].value = managementDetail.category;
+                    document.forms['article-form']['content'].value = managementDetail.content;
+                } else {
+                    alert('Không load được tin tức');
+                }
+            }
+        }
+        xhr.open('GET' ,getManagementDetailUrl, false);
+        xhr.send();
+    }
+</script>
+</body>
+</html>
